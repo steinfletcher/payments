@@ -1,0 +1,22 @@
+version: '2.1'
+services:
+
+  db:
+    image: postgres:9.6
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: payments
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  api:
+    build:
+      context: .
+    command: sh -c './wait-for db:5432 -- ./payments'
+    ports:
+      - 9000:8080
+    environment:
+      DB_ADDR: 'host=db port=5432 user=postgres password=postgres dbname=payments sslmode=disable'
+      GIN_MODE: release
